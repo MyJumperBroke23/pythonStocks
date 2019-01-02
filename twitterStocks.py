@@ -1,7 +1,7 @@
 import math
 import random
 import tweepy
-
+from stockPrices import *
 # Key dictionary
 keys = {}
 # Grabbing keys
@@ -13,4 +13,4 @@ for line in keyfile:
 auth = tweepy.OAuthHandler(keys["apikey"], keys["apisecret"])
 auth.set_access_token(keys["accesstoken"], keys["accesssecret"])
 api = tweepy.API(auth)
-api.update_status("OK2")
+#api.update_status("OK1")
