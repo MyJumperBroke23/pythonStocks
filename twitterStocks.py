@@ -2,6 +2,7 @@ import math
 import random
 import tweepy
 from stockPrices import *
+from tweetScraper import sentiment
 # Key dictionary
 keys = {}
 # Grabbing keys
