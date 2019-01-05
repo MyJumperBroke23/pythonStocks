@@ -2,7 +2,7 @@ import math
 import random
 import tweepy
 from stockPrices import *
-from tweetScraper import sentiment
+from tweetSentiment import query
 # Key dictionary
 keys = {}
 # Grabbing keys
@@ -15,3 +15,4 @@ auth = tweepy.OAuthHandler(keys["apikey"], keys["apisecret"])
 auth.set_access_token(keys["accesstoken"], keys["accesssecret"])
 api = tweepy.API(auth)
 #api.update_status("OK1")
+query("apple stocks ",api)
