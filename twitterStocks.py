@@ -18,3 +18,5 @@ api = tweepy.API(auth)
 # api.update_status("OK1")
 searchTerm = 'APPL'
 max_tweets = 1000
+for status in tweepy.Cursor(api.search, q=searchTerm).items(max_tweets):
+    print(status.text)
