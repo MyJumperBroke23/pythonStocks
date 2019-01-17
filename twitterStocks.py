@@ -16,7 +16,11 @@ auth = tweepy.OAuthHandler(keys["apikey"], keys["apisecret"])
 auth.set_access_token(keys["accesstoken"], keys["accesssecret"])
 api = tweepy.API(auth)
 # api.update_status("OK1")
-searchTerm = 'APPL'
-max_tweets = 1000
+searchTerm = "APPL"
+max_tweets = 10
+file = open("tweets.txt", "a")
 for status in tweepy.Cursor(api.search, q=searchTerm).items(max_tweets):
-    print(status.text)
+    if status.lang == "en" and "APPL" in status.text:
+        file.write(status.text)
+        file.write("\n\n")
+file.close()
