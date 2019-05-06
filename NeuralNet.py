@@ -38,3 +38,7 @@ class LSTM(nn.Module):
         y_pred = self.linear1(lstm_out[:, -1, :])
         y_pred = self.linear2(y_pred)
         return y_pred
+
+
+epochs = 1
+def train(num_epochs):
