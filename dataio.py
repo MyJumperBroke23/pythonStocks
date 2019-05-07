@@ -2,7 +2,7 @@ import csv
 import numpy as np
 
 
-def readCSV(path: str, cols: list = [1, 3, 4, 5]):
+def readCSV(path: str, cols: list = [1, 2, 3, 4, 5]):
     arr = []
     with open(path) as file:
         reader = csv.reader(file, delimiter=',')

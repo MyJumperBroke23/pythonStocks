@@ -1,6 +1,10 @@
 import torch
+import torch.nn as nn
 import numpy as np
-import pandas as pd
+from dataio.py import readCSV
+
+data = readCSV("data/AAPL60.csv")
+np.flip(A, 0)
 
 class LSTM(nn.Module):
 
@@ -36,9 +40,29 @@ class LSTM(nn.Module):
         # Only take the output from the final timetep
         # Can pass on the entirety of lstm_out to the next layer if it is a seq2seq prediction
         y_pred = self.linear1(lstm_out[:, -1, :])
+        y_pred = nn.ReLU(y_pred)
         y_pred = self.linear2(y_pred)
         return y_pred
 
 
+lstmInputSize = 4
+lstmHLayers = 2
+lstmHNodes = 128
+lstmFCDIM = 32
+lstmDropP = 0.3
+lstmOutputDim = 2
+
+learning_rate = 1e-4
+
+
+model = LSTM(input_dim=lstmInputSize, hidden_dim=lstmHNodes, output_dim=lstmOutputDim, num_layers=lstmHLayers,
+             drop_p=lstmDropP, linear_dim=lstmFCDIM)
+
+loss_fn = torch.nn.MSELoss()
+
+optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+
 epochs = 1
+
 def train(num_epochs):
+
