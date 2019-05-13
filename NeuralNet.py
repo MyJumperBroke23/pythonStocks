@@ -1,10 +1,15 @@
 import torch
 import torch.nn as nn
 import numpy as np
-from dataio.py import readCSV
+from dataio import *
 
-data = readCSV("data/AAPL60.csv")
-np.flip(A, 0)
+data = readCSV("data/AAPL3.csv")
+data = np.flip(data, 0).copy()
+numTrain = int(0.9*len(data))
+trainData = data[0:numTrain]
+trainData = genData(trainData)
+testData = data[numTrain:]
+testData = genData(testData)
 
 class LSTM(nn.Module):
 
@@ -40,17 +45,16 @@ class LSTM(nn.Module):
         # Only take the output from the final timetep
         # Can pass on the entirety of lstm_out to the next layer if it is a seq2seq prediction
         y_pred = self.linear1(lstm_out[:, -1, :])
-        y_pred = nn.ReLU(y_pred)
         y_pred = self.linear2(y_pred)
         return y_pred
 
 
-lstmInputSize = 4
+lstmInputSize = 5
 lstmHLayers = 2
 lstmHNodes = 128
 lstmFCDIM = 32
 lstmDropP = 0.3
-lstmOutputDim = 2
+lstmOutputDim = 5
 
 learning_rate = 1e-4
 
@@ -64,5 +68,41 @@ optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
 epochs = 1
 
-def train(num_epochs):
 
+def test():
+    model.eval()
+    avgLoss = 0
+    for dataPoint in range(len(testData)):
+        lstmInput = testData[dataPoint]
+        lstmInput = torch.Tensor(lstmInput)
+        lstmInput = lstmInput.view(len(testData[dataPoint]), 1, 5)
+        pred_label = model(lstmInput)
+        pred_label = pred_label.view(5)
+        label = testLabel[dataPoint]
+        loss = loss_fn(label, pred_label)
+        avgLoss += loss.item()
+    return avgLoss / len(testData)
+
+def train(num_epochs):
+    model.train()
+    for epoch in range(num_epochs):
+        avgLoss = 0.0
+        for datapoint in range(len(trainData)):
+            model.hidden = model.init_hidden()
+            optimizer.zero_grad()
+
+            lstmInput = trainData[datapoint][0]
+            lstmInput = torch.Tensor(lstmInput)
+            lstmInput = lstmInput.view(len(trainData[datapoint][0]), 1, 5)
+
+            pred_label = model(lstmInput)
+            label = torch.Tensor(trainData[datapoint][1])
+            label = label.view(1, 5)
+            loss = loss_fn(pred_label, label)
+            # print(label, pred_label)
+            avgLoss += loss.item()
+            loss.backward()
+            optimizer.step()
+        print("Epoch: ", epoch, "MSELoss: ", avgLoss / len(trainData), "Test Acc: ", test())
+
+train(epochs)
