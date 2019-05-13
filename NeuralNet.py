@@ -44,14 +44,14 @@ class LSTM(nn.Module):
 
         # Only take the output from the final timetep
         # Can pass on the entirety of lstm_out to the next layer if it is a seq2seq prediction
-        y_pred = self.linear1(lstm_out[:, -1, :])
+        y_pred = self.linear1(lstm_out[-1, :, :])
         y_pred = self.linear2(y_pred)
         return y_pred
 
 
 lstmInputSize = 5
 lstmHLayers = 2
-lstmHNodes = 128
+lstmHNodes = 64
 lstmFCDIM = 32
 lstmDropP = 0.3
 lstmOutputDim = 5
@@ -73,12 +73,12 @@ def test():
     model.eval()
     avgLoss = 0
     for dataPoint in range(len(testData)):
-        lstmInput = testData[dataPoint]
+        lstmInput = testData[dataPoint][0]
         lstmInput = torch.Tensor(lstmInput)
-        lstmInput = lstmInput.view(len(testData[dataPoint]), 1, 5)
+        lstmInput = lstmInput.view(len(testData[dataPoint][0]), 1, 5)
         pred_label = model(lstmInput)
-        pred_label = pred_label.view(5)
-        label = testLabel[dataPoint]
+        label = testData[dataPoint][1]
+        label = torch.Tensor(label)
         loss = loss_fn(label, pred_label)
         avgLoss += loss.item()
     return avgLoss / len(testData)
